@@ -8,4 +8,10 @@ Turn on cuda/HIP kernel use by putting `use_cuda_kernels` in tea.in.
 
 ## Compiling
 
-- In many case just typing `make` in the required software version will work. 
+In most cases one needs to load the appropriate modules (including those for the accelerator in question).
+
+Then for AMD GPUs (with the Cray compiler)
+
+```
+make clean; make COMPILER=CRAY
+```

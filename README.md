@@ -1,6 +1,6 @@
 # TeaLeaf HIP
 
-A HIP port of the TeaLeaf mini-app starting from the current CUDA version on UK-MAC.
+A HIP port of the TeaLeaf mini-app starting from the current CUDA version on UK-MAC. First attempt will try and use hipify-perl.
 
 ## Compiling
 

@@ -79,7 +79,7 @@ OMP=$(OMP_$(COMPILER))
 FLAGS_INTEL     = -O3 -fpp -no-prec-div
 FLAGS_SUN       = -fast -xipo=2 -Xlistv4
 FLAGS_GNU       = -O3 -march=native -funroll-loops -cpp
-FLAGS_CRAY      = -em -ra -h acc_model=fast_addr:no_deep_copy:auto_async_all
+FLAGS_CRAY      = -em -ra -homp
 FLAGS_PGI       = -fastsse -gopt -Mlist
 FLAGS_PATHSCALE = -O3
 FLAGS_XL       = -O5 -qipa=partition=large -g -qfullpath -Q -qsigtrap -qextname=flush:ideal_gas_kernel_c:viscosity_kernel_c:pdv_kernel_c:revert_kernel_c:accelerate_kernel_c:flux_calc_kernel_c:advec_cell_kernel_c:advec_mom_kernel_c:reset_field_kernel_c:timer_c:unpack_top_bottom_buffers_c:pack_top_bottom_buffers_c:unpack_left_right_buffers_c:pack_left_right_buffers_c:field_summary_kernel_c:update_halo_kernel_c:generate_chunk_kernel_c:initialise_chunk_kernel_c:calc_dt_kernel_c -qlistopt -qattr=full -qlist -qreport -qxref=full -qsource -qsuppress=1506-224:1500-036
@@ -125,41 +125,44 @@ endif
 # flags for nvcc
 # set NV_ARCH to select the correct one
 #NV_ARCH=VOLTA
-CODE_GEN_FERMI=-gencode arch=compute_20,code=sm_21
-CODE_GEN_KEPLER=-gencode arch=compute_35,code=sm_35
-CODE_GEN_KEPLER_CONSUMER=-gencode arch=compute_30,code=sm_30
-CODE_GEN_MAXWELL=-gencode arch=compute_50,code=sm_50
-CODE_GEN_PASCAL=-gencode arch=compute_60,code=sm_60
-CODE_GEN_VOLTA=-gencode arch=compute_70,code=sm_70
-CODE_GEN_AMPERE=-gencode arch=compute_80,code=sm_80
+#CODE_GEN_FERMI=-gencode arch=compute_20,code=sm_21
+#CODE_GEN_KEPLER=-gencode arch=compute_35,code=sm_35
+#CODE_GEN_KEPLER_CONSUMER=-gencode arch=compute_30,code=sm_30
+#CODE_GEN_MAXWELL=-gencode arch=compute_50,code=sm_50
+#CODE_GEN_PASCAL=-gencode arch=compute_60,code=sm_60
+#CODE_GEN_VOLTA=-gencode arch=compute_70,code=sm_70
+#CODE_GEN_AMPERE=-gencode arch=compute_80,code=sm_80
 
-LDLIBS+=-lstdc++ -lcudart
+LDLIBS+=-lstdc++ #-lcudart
 
 FLAGS=$(FLAGS_$(COMPILER)) $(OMP) $(I3E) $(OPTIONS) -g
 CFLAGS=$(CFLAGS_$(COMPILER)) $(OMP) $(I3E) $(C_OPTIONS) -c -g
 CXXFLAGS=$(CFLAGS) -g
-MPI_COMPILER=mpif90
-C_MPI_COMPILER=mpicc
-CXX_MPI_COMPILER=mpicxx
+MPI_COMPILER=ftn
+C_MPI_COMPILER=cc
+CXX_MPI_COMPILER=CC
+HIP_MPI_COMPILER=hipcc #CC
 
 # requires CUDA_HOME to be set - not the same on all machines
-NV_FLAGS=-I$(CUDA_HOME)/include $(CODE_GEN_$(NV_ARCH)) -restrict -Xcompiler "$(CFLAGS)"
-NV_FLAGS+=-DNO_ERR_CHK
+HIP_FLAGS= -std=c++11 -D__HIP_ROCclr__ -D__HIP_ARCH_GFX90A__=1 --rocm-path=${ROCM_PATH} --offload-arch=gfx90a -x hip -I${ROCM_PATH}/include #CCE
+#HIP_FLAGS=--amdgpu-target=gfx90a -I${CRAY_MPICH_PREFIX}/include #hipcc
+HIP_FLAGS+=-D NO_ERR_CHK
 libdir.x86_64 = lib64
 libdir.i686   = lib
 MACHINE := $(shell uname -m)
 libdir = $(libdir.$(MACHINE))
-LDFLAGS+=-L$(CUDA_HOME)/$(libdir)
+LDFLAGS+=-std=c++11 -D__HIP_ROCclr__ --rocm-path=${ROCM_PATH} -L${ROCM_PATH}/lib -lamdhip64 -lhsa-runtime64 #CCE
+#LDFLAGS+=-L${CRAY_MPICH_PREFIX}/lib -lmpi #hipcc
 
 ifdef DEBUG
-NV_FLAGS+=-O0 -g -G
+HIP_FLAGS+=-O0 -g -G
 else
-NV_FLAGS+=-O3
+HIP_FLAGS+=-O3
 endif
 
 # manually choosing GPU with either device_id or automatic based on mpi rank
 ifdef MANUALLY_CHOOSE_GPU
-NV_FLAGS+=-D MANUALLY_CHOOSE_GPU
+HIP_FLAGS+=-D MANUALLY_CHOOSE_GPU
 endif
 
 C_FILES=\
@@ -218,7 +221,7 @@ tea_leaf: Makefile $(FORTRAN_FILES) $(C_FILES) $(CUDA_FILES)
 include makefile.deps
 
 %.o: %.cu Makefile makefile.deps
-	nvcc -ccbin $(CXX_MPI_COMPILER) $(NV_FLAGS) -c $< -o $@
+	$(HIP_MPI_COMPILER) $(HIP_FLAGS) -c $< -o $@
 %_module.mod: %.f90 %.o
 	@true
 %.o: %.f90 Makefile makefile.deps

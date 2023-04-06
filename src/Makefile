@@ -141,7 +141,7 @@ CXXFLAGS=$(CFLAGS) -g
 MPI_COMPILER=ftn
 C_MPI_COMPILER=cc
 CXX_MPI_COMPILER=CC
-HIP_MPI_COMPILER=hipcc #CC
+HIP_MPI_COMPILER=CC #hipcc 
 
 # requires CUDA_HOME to be set - not the same on all machines
 HIP_FLAGS= -std=c++11 -D__HIP_ROCclr__ -D__HIP_ARCH_GFX90A__=1 --rocm-path=${ROCM_PATH} --offload-arch=gfx90a -x hip -I${ROCM_PATH}/include #CCE

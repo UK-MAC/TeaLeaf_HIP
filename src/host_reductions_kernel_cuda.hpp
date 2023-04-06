@@ -29,7 +29,7 @@ private:
             len = num_blocks;
         }
         CUDA_ERR_CHECK;
-        cudaMemcpy(result, buffer, sizeof(T), cudaMemcpyDeviceToHost);
+        hipMemcpy(result, buffer, sizeof(T), hipMemcpyDeviceToHost);
     }
 
 public:

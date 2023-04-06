@@ -20,10 +20,10 @@ void TealeafCudaChunk::calcrxry
 {
     double dx, dy;
 
-    cudaMemcpy(&dx, halo_exchange_depth + celldx, sizeof(double), cudaMemcpyDeviceToHost);
-    cudaMemcpy(&dy, halo_exchange_depth + celldy, sizeof(double), cudaMemcpyDeviceToHost);
+    hipMemcpy(&dx, halo_exchange_depth + celldx, sizeof(double), hipMemcpyDeviceToHost);
+    hipMemcpy(&dy, halo_exchange_depth + celldy, sizeof(double), hipMemcpyDeviceToHost);
 
-    cudaDeviceSynchronize();
+    hipDeviceSynchronize();
 
     CUDA_ERR_CHECK;
 
@@ -94,13 +94,13 @@ void TealeafCudaChunk::upload_ch_coefs
 
     if (ch_alphas_device == NULL && ch_betas_device == NULL)
     {
-        cudaMalloc((void**) &ch_alphas_device, ch_buf_sz);
-        cudaMalloc((void**) &ch_betas_device, ch_buf_sz);
+        hipMalloc((void**) &ch_alphas_device, ch_buf_sz);
+        hipMalloc((void**) &ch_betas_device, ch_buf_sz);
     }
 
     // upload to device
-    cudaMemcpy(ch_alphas_device, ch_alphas, ch_buf_sz, cudaMemcpyHostToDevice);
-    cudaMemcpy(ch_betas_device, ch_betas, ch_buf_sz, cudaMemcpyHostToDevice);
+    hipMemcpy(ch_alphas_device, ch_alphas, ch_buf_sz, hipMemcpyHostToDevice);
+    hipMemcpy(ch_betas_device, ch_betas, ch_buf_sz, hipMemcpyHostToDevice);
 }
 
 void TealeafCudaChunk::tea_leaf_kernel_cheby_init

@@ -136,8 +136,8 @@ void TealeafCudaChunk::packUnpackAllBuffers
 
     if (!pack)
     {
-        cudaMemcpy(device_buffer, host_buffer, n_exchanged*side_size,
-            cudaMemcpyHostToDevice);
+        hipMemcpy(device_buffer, host_buffer, n_exchanged*side_size,
+            hipMemcpyHostToDevice);
 
         CUDA_ERR_CHECK;
     }
@@ -190,8 +190,8 @@ void TealeafCudaChunk::packUnpackAllBuffers
 
     if (pack)
     {
-        cudaMemcpy(host_buffer, device_buffer, n_exchanged*side_size,
-            cudaMemcpyDeviceToHost);
+        hipMemcpy(host_buffer, device_buffer, n_exchanged*side_size,
+            hipMemcpyDeviceToHost);
 
         CUDA_ERR_CHECK;
     }

@@ -1,3 +1,4 @@
+#include "hip/hip_runtime.h"
 /*Crown Copyright 2012 AWE.
  *
  * This file is part of TeaLeaf.
@@ -97,17 +98,17 @@
 #define TIME_KERNEL_BEGIN   \
     if (profiler_on)                                            \
     {                                                           \
-        cudaEventCreate(&_t0);                                  \
-        cudaEventCreate(&_t1);                                  \
-        cudaEventRecord(_t0);                                   \
+        hipEventCreate(&_t0);                                  \
+        hipEventCreate(&_t1);                                  \
+        hipEventRecord(_t0);                                   \
     }                                                           \
 
 #define TIME_KERNEL_END(funcname) \
     if (profiler_on)                                            \
     {                                                           \
-        cudaEventRecord(_t1);                                   \
-        cudaEventSynchronize(_t1);                              \
-        cudaEventElapsedTime(&taken, _t0, _t1);                 \
+        hipEventRecord(_t1);                                   \
+        hipEventSynchronize(_t1);                              \
+        hipEventElapsedTime(&taken, _t0, _t1);                 \
         std::string func_name(#funcname);                       \
         if (kernel_times.end() != kernel_times.find(func_name)) \
         {                                                       \
@@ -117,8 +118,8 @@
         {                                                       \
             kernel_times[func_name] = taken;                    \
         }                                                       \
-        cudaEventDestroy(_t0);                                  \
-        cudaEventDestroy(_t1);                                  \
+        hipEventDestroy(_t0);                                  \
+        hipEventDestroy(_t1);                                  \
     }
 
 // enormous ugly macro that profiles kernels + checks if there were any errors
@@ -287,7 +288,7 @@ private:
     std::map<std::string, double> kernel_times;
     // events used for timing
     float taken;
-    cudaEvent_t _t0, _t1;
+    hipEvent_t _t0, _t1;
 
     // calculate rx/ry to pass back to fortran
     void calcrxry

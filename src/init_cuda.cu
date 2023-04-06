@@ -74,26 +74,26 @@ y_max(*in_y_max)
     int device_id = readInt(input, "cuda_device");
     device_id = (device_id < 0) ? 0 : device_id;
 
-    cudaThreadExit();
+    hipDeviceReset();
 
     // account for MPI
     int num_devices;
-    cudaGetDeviceCount(&num_devices);
+    hipGetDeviceCount(&num_devices);
 
     if (num_devices < device_id)
     {
         DIE("Device id %d specified in tea.in, but only %d devices available", device_id, num_devices);
     }
 
-    int err = cudaSetDevice(device_id);
+    int err = hipSetDevice(device_id);
 
-    if (err != cudaSuccess)
+    if (err != hipSuccess)
     {
         DIE("Setting device id to %d in rank %d failed with error code %d\n", device_id, rank, err);
     }
 
-    struct cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, device_id);
+    struct hipDeviceProp_t prop;
+    hipGetDeviceProperties(&prop, device_id);
     std::cout << "CUDA in rank " << rank << " using " << prop.name << std::endl;
 
     int file_halo_depth = readInt(input, "halo_depth");
@@ -296,11 +296,11 @@ void TealeafCudaChunk::initBuffers
 (void)
 {
     #define CUDA_ARRAY_ALLOC(arr, size)     \
-            cudaMalloc((void**) &arr, size);\
+            hipMalloc((void**) &arr, size);\
             errorHandler(__LINE__, __FILE__);\
-            cudaDeviceSynchronize();        \
-            cudaMemset(arr, 0, size);       \
-            cudaDeviceSynchronize();        \
+            hipDeviceSynchronize();        \
+            hipMemset(arr, 0, size);       \
+            hipDeviceSynchronize();        \
             CUDA_ERR_CHECK;
 
     // number of bytes to allocate for x size array

@@ -125,7 +125,7 @@
 // enormous ugly macro that profiles kernels + checks if there were any errors
 #define CUDALAUNCH(funcname, ...)                               \
     TIME_KERNEL_BEGIN; \
-    funcname<<<grid_dim, block_shape>>>(kernel_info_map.at(#funcname), __VA_ARGS__); \
+    hipLaunchKernelGGL(funcname, grid_dim, block_shape, 0, 0, kernel_info_map.at(#funcname), __VA_ARGS__); \
     CUDA_ERR_CHECK; \
     TIME_KERNEL_END(#funcname)
 

@@ -107,7 +107,7 @@ public:
         __attribute__((__unused__)) const int loc_row = get_local_id(1); \
         __attribute__((__unused__)) const int lid = loc_row*LOCAL_X + loc_column; \
         __attribute__((__unused__)) const int block_id = blockIdx.x + blockIdx.y*gridDim.x;
-
+        
         // only need to synch if not working within a warp
         if (offset > 16)
         {

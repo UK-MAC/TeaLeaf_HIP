@@ -24,7 +24,7 @@
 
 #include "cuda_common.hpp"
 #include "cuda_strings.hpp"
-
+#include "hip/hip_runtime.h"
 #include "mpi.h"
 #include <sstream>
 #include <cstdio>
@@ -93,8 +93,8 @@ y_max(*in_y_max)
     }
 
     struct hipDeviceProp_t prop;
-    hipGetDeviceProperties(&prop, device_id);
-    std::cout << "CUDA in rank " << rank << " using " << prop.name << std::endl;
+    hipGetDeviceProperties(&prop,device_id);
+    std::cout << "CUDA in rank " << rank << " using AMD " << prop.gcnArchName<< std::endl;
 
     int file_halo_depth = readInt(input, "halo_depth");
     halo_exchange_depth = file_halo_depth;

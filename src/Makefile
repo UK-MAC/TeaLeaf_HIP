@@ -133,7 +133,7 @@ endif
 #CODE_GEN_VOLTA=-gencode arch=compute_70,code=sm_70
 #CODE_GEN_AMPERE=-gencode arch=compute_80,code=sm_80
 
-LDLIBS+=-lstdc++ #-lcudart
+LDLIBS+= -lstdc++ #-lcudart
 
 FLAGS=$(FLAGS_$(COMPILER)) $(OMP) $(I3E) $(OPTIONS) -g
 CFLAGS=$(CFLAGS_$(COMPILER)) $(OMP) $(I3E) $(C_OPTIONS) -c -g
@@ -142,28 +142,29 @@ MPI_COMPILER=ftn
 C_MPI_COMPILER=cc
 CXX_MPI_COMPILER=CC
 HIP_MPI_COMPILER=CC #hipcc 
+#HIP_MPI_COMPILER=hipcc
 
 # requires CUDA_HOME to be set - not the same on all machines
-HIP_FLAGS= -std=c++11 -D__HIP_ROCclr__ -D__HIP_ARCH_GFX90A__=1 --rocm-path=${ROCM_PATH} --offload-arch=gfx90a -x hip -I${ROCM_PATH}/include #CCE
-#HIP_FLAGS=--amdgpu-target=gfx90a -I${CRAY_MPICH_PREFIX}/include #hipcc
-HIP_FLAGS+=-D NO_ERR_CHK
+HIP_FLAGS= -std=c++11 -D__HIP_ARCH_GFX90A__=1 --rocm-path=${ROCM_PATH} --offload-arch=gfx90a -x hip -I${ROCM_PATH}/include #CCE
+#HIP_FLAGS= --amdgpu-target=gfx90a -I${CRAY_MPICH_PREFIX}/include #hipcc
+HIP_FLAGS+= -D NO_ERR_CHK
 libdir.x86_64 = lib64
 libdir.i686   = lib
 MACHINE := $(shell uname -m)
 libdir = $(libdir.$(MACHINE))
-LDFLAGS+=-std=c++11 -D__HIP_ROCclr__ --rocm-path=${ROCM_PATH} -L${ROCM_PATH}/lib -lamdhip64 -lhsa-runtime64 #CCE
+LDFLAGS+= -std=c++11 --rocm-path=${ROCM_PATH} -L${ROCM_PATH}/lib -lamdhip64  #CCE
 #LDFLAGS+=-L${CRAY_MPICH_PREFIX}/lib -lmpi #hipcc
 
 ifdef DEBUG
-HIP_FLAGS+=-O0 -g -G
+HIP_FLAGS+= -O0 -g -G
 else
-HIP_FLAGS+=-O3
+HIP_FLAGS+= -O3
 endif
 
 # manually choosing GPU with either device_id or automatic based on mpi rank
-ifdef MANUALLY_CHOOSE_GPU
-HIP_FLAGS+=-D MANUALLY_CHOOSE_GPU
-endif
+#ifdef MANUALLY_CHOOSE_GPU
+#HIP_FLAGS+= -D MANUALLY_CHOOSE_GPU
+#endif
 
 C_FILES=\
 	timer_c.o

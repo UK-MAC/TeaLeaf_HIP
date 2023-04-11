@@ -18,15 +18,15 @@ private:
             switch(reduction_type)
             {
                 case RED_SUM:
-                    hipLaunchKernelGGL(HIP_KERNEL_NAME(reduction<T, RED_SUM>), num_blocks, BLOCK_SZ, 0, 0, len, buffer);
+                    reduction<T, RED_SUM><<<num_blocks, BLOCK_SZ>>>(len, buffer);
                 break;
                 case RED_MAX:
-                    hipLaunchKernelGGL(HIP_KERNEL_NAME(reduction<T, RED_MAX>), num_blocks, BLOCK_SZ, 0, 0, len, buffer);
+                    reduction<T, RED_MAX><<<num_blocks, BLOCK_SZ>>>(len, buffer);
                 break;
                 case RED_MIN:
-                    hipLaunchKernelGGL(HIP_KERNEL_NAME(reduction<T, RED_MIN>), num_blocks, BLOCK_SZ, 0, 0, len, buffer);
+                    reduction<T, RED_MIN><<<num_blocks, BLOCK_SZ>>>(len, buffer);
                 break;
-            }
+            }		    
             len = num_blocks;
         }
         CUDA_ERR_CHECK;

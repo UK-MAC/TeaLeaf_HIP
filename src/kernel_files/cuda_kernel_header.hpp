@@ -5,7 +5,7 @@
 
 // size of workgroup/block
 #ifndef BLOCK_SZ 
-    #define BLOCK_SZ 128
+    #define BLOCK_SZ 1024
 #endif
 
 #define JACOBI_BLOCK_SIZE 4

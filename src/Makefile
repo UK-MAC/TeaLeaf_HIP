@@ -146,14 +146,14 @@ HIP_MPI_COMPILER=CC #hipcc
 
 # requires CUDA_HOME to be set - not the same on all machines
 HIP_FLAGS= -std=c++11 -D__HIP_ARCH_GFX90A__=1 --rocm-path=${ROCM_PATH} --offload-arch=gfx90a -x hip -I${ROCM_PATH}/include #CCE
-#HIP_FLAGS= --amdgpu-target=gfx90a -I${CRAY_MPICH_PREFIX}/include #hipcc
+#HIP_FLAGS= -std=c++11 --offload-arch=gfx90a -I${CRAY_MPICH_PREFIX}/include #hipcc
 HIP_FLAGS+= -D NO_ERR_CHK
 libdir.x86_64 = lib64
 libdir.i686   = lib
 MACHINE := $(shell uname -m)
 libdir = $(libdir.$(MACHINE))
 LDFLAGS+= -std=c++11 --rocm-path=${ROCM_PATH} -L${ROCM_PATH}/lib -lamdhip64  #CCE
-#LDFLAGS+=-L${CRAY_MPICH_PREFIX}/lib -lmpi #hipcc
+#LDFLAGS+=-L${CRAY_MPICH_PREFIX}/lib -lmpi -lamdhip64 #hipcc
 
 ifdef DEBUG
 HIP_FLAGS+= -O0 -g -G

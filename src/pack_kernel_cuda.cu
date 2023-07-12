@@ -115,7 +115,8 @@ void TealeafCudaChunk::packUnpackAllBuffers
 
     switch (face)
     {
-    // pad it to fit in 32 local work group size (always on NVIDIA hardware)
+    // pad it to fit in 32 local work group size (always on NVIDIA hardware
+    // So if on AMD pad to 64 local work group size?
     case CHUNK_LEFT:
     case CHUNK_RIGHT:
         side_size = depth*(y_max + 2*depth);

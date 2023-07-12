@@ -174,7 +174,8 @@ void TealeafCudaChunk::initSizes
         std::ceil((y_max + 2.0*halo_exchange_depth)/LOCAL_Y));
     num_blocks = grid_dim.x*grid_dim.y;
 
-    #define UPDATE_HALO_SIZE 32
+    // 32 for Nvidia, so 64 for AMD?
+    #define UPDATE_HALO_SIZE 64
 
     for (int depth = 1; depth <= 2; depth++)
     {

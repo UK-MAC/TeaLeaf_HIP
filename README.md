@@ -1,6 +1,6 @@
 # TeaLeaf HIP
 
-A HIP port of the TeaLeaf mini-app starting from the current CUDA version on UK-MAC. This port used hipify-perl to convert the CUDA kernels. Extra work was required for CUDA specific code (references to specific warpsizes relevant to NVidia hardware etc.).
+A HIP port of the TeaLeaf mini-app starting from the current CUDA version on UK-MAC. This port used hipify-perl (https://github.com/ROCm-Developer-Tools/HIPIFY) to convert the CUDA kernels. Extra work was required for CUDA specific code (references to specific warpsizes relevant to NVidia hardware etc.).
 
 ## Compiling
 

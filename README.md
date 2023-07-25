@@ -12,6 +12,11 @@ Then for AMD GPUs (with the Cray compiler)
 make clean; make COMPILER=CRAY
 ```
 
-# Extra tea.in flags
+## Extra tea.in flags
 
 Turn on HIP kernel use insert `use_cuda_kernels` in tea.in.
+
+## Performance
+
+Observed performance compared to directive based versions (OpenMP, OpenACC) is anywhere from 30-40% depending on node count for a sufficiently large enough benchmark to make using a GPU sensible. This is consistent with performance observed for the CUDA version of CloverLeaf.
+
